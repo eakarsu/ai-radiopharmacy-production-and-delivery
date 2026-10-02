@@ -1,0 +1,368 @@
+// Generated schema — modeled after beautyhqio conventions.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  active       Boolean @default(true)
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(ANALYST)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  ANALYST
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actorName String?
+  action    String
+  entity    String
+  entityId  String?
+  detail    String?
+  createdAt DateTime @default(now())
+}
+
+model WorkflowAnalysis {
+ id String @id @default(cuid())
+ actorId String
+ workflow String
+ subjectEntity String
+ subjectId String
+ input Json
+ evidence Json
+ evidenceHash String
+ result Json
+ model String
+ receipt String?
+ createdAt DateTime @default(now())
+ @@index([workflow, createdAt])
+}
+model RecordReview {
+ id String @id @default(cuid())
+ actorId String
+ entity String
+ entityId String
+ version String
+ reason String
+ createdAt DateTime @default(now())
+ @@unique([entity, entityId, version, actorId])
+}
+model UsageBucket {
+ id String @id
+ calls Int
+}
+model IssuedCredential {
+ token String @id
+ entity String
+ entityId String
+ version String
+ assertion Json
+ createdAt DateTime @default(now())
+ revokedAt DateTime?
+ @@index([entity, entityId, createdAt])
+}
+
+model DomainArtifact {
+ id String @id @default(cuid())
+ subjectEntity String
+ subjectId String
+ title String
+ content String
+ contentHash String
+ actorId String
+ approvedBy String?
+ createdAt DateTime @default(now())
+ @@index([subjectEntity, subjectId])
+}
+
+model RecordApproval {
+ id String @id
+ version String
+}
+model DomainExecution {
+ id String @id
+ actorId String
+ connectorId String
+ action String
+ subjectEntity String
+ subjectId String
+ version String
+ status String
+ result Json?
+ createdAt DateTime @default(now())
+}
+
+model WorkSession {
+ id String @id @default(cuid())
+ actorId String
+ respondentId String
+ subjectEntity String
+ subjectId String
+ questions Json
+ answers Json
+ currentQuestion String?
+ status String
+ deadline DateTime
+ createdAt DateTime @default(now())
+ @@index([respondentId, createdAt])
+}
+model SessionMedia {
+ id String @id @default(cuid())
+ sessionId String
+ questionId String
+ actorId String
+ contentType String
+ bytes Bytes
+ contentHash String
+ createdAt DateTime @default(now())
+ @@index([sessionId])
+}
+
+model AppSetting {
+ id String @id
+ value Json
+ updatedAt DateTime @updatedAt
+}
+
+model ProductionDay {
+ id String @id @default(cuid())
+ name String
+ facility String
+ licenseNumber String
+ pharmacist String
+ productionDate DateTime
+ cutoffAt DateTime
+ status String @default("Draft")
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ inverseRadiopharmacyOrder_productionDayId RadiopharmacyOrder[] @relation("RadiopharmacyOrder_productionDayId")
+ inverseProductionLot_productionDayId ProductionLot[] @relation("ProductionLot_productionDayId")
+ inverseOrderLotAssignment_productionDayId OrderLotAssignment[] @relation("OrderLotAssignment_productionDayId")
+ inverseAssayRecord_productionDayId AssayRecord[] @relation("AssayRecord_productionDayId")
+ inverseBatchCheck_productionDayId BatchCheck[] @relation("BatchCheck_productionDayId")
+ inverseDeliveryDispatch_productionDayId DeliveryDispatch[] @relation("DeliveryDispatch_productionDayId")
+ inverseDeliveryReceipt_productionDayId DeliveryReceipt[] @relation("DeliveryReceipt_productionDayId")
+ inverseProductionException_productionDayId ProductionException[] @relation("ProductionException_productionDayId")
+ inverseOperationalTask_productionDayId OperationalTask[] @relation("OperationalTask_productionDayId")
+ inverseRuleVersion_productionDayId RuleVersion[] @relation("RuleVersion_productionDayId")
+ inverseDocumentRequirement_productionDayId DocumentRequirement[] @relation("DocumentRequirement_productionDayId")
+}
+
+model RadiopharmacyOrder {
+ id String @id @default(cuid())
+ name String
+ orderNumber String
+ customer String
+ product String
+ requestedAt DateTime
+ deliveryBy DateTime
+ quantity Int
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedProductionDayId ProductionDay @relation("RadiopharmacyOrder_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+ inverseOrderLotAssignment_radiopharmacyOrderId OrderLotAssignment[] @relation("OrderLotAssignment_radiopharmacyOrderId")
+ inverseDeliveryDispatch_radiopharmacyOrderId DeliveryDispatch[] @relation("DeliveryDispatch_radiopharmacyOrderId")
+ inverseDeliveryReceipt_radiopharmacyOrderId DeliveryReceipt[] @relation("DeliveryReceipt_radiopharmacyOrderId")
+}
+
+model ProductionLot {
+ id String @id @default(cuid())
+ title String
+ lotNumber String
+ product String
+ producedAt DateTime
+ expiresAt DateTime
+ batchReference String
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedProductionDayId ProductionDay @relation("ProductionLot_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+ inverseOrderLotAssignment_productionLotId OrderLotAssignment[] @relation("OrderLotAssignment_productionLotId")
+ inverseAssayRecord_productionLotId AssayRecord[] @relation("AssayRecord_productionLotId")
+ inverseBatchCheck_productionLotId BatchCheck[] @relation("BatchCheck_productionLotId")
+ inverseProductionException_productionLotId ProductionException[] @relation("ProductionException_productionLotId")
+}
+
+model OrderLotAssignment {
+ id String @id @default(cuid())
+ title String
+ radiopharmacyOrderId String
+ productionLotId String
+ units Int
+ assignedAt DateTime
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedRadiopharmacyOrderId RadiopharmacyOrder @relation("OrderLotAssignment_radiopharmacyOrderId", fields: [radiopharmacyOrderId], references: [id], onDelete: Restrict)
+ linkedProductionLotId ProductionLot @relation("OrderLotAssignment_productionLotId", fields: [productionLotId], references: [id], onDelete: Restrict)
+ linkedProductionDayId ProductionDay @relation("OrderLotAssignment_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+}
+
+model AssayRecord {
+ id String @id @default(cuid())
+ title String
+ productionLotId String
+ assayedAt DateTime
+ activityBq Float
+ instrument String
+ technician String
+ evidence String
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedProductionLotId ProductionLot @relation("AssayRecord_productionLotId", fields: [productionLotId], references: [id], onDelete: Restrict)
+ linkedProductionDayId ProductionDay @relation("AssayRecord_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+}
+
+model BatchCheck {
+ id String @id @default(cuid())
+ title String
+ productionLotId String
+ checkName String
+ resultText String
+ checkedAt DateTime
+ reviewer String
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedProductionLotId ProductionLot @relation("BatchCheck_productionLotId", fields: [productionLotId], references: [id], onDelete: Restrict)
+ linkedProductionDayId ProductionDay @relation("BatchCheck_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+}
+
+model DeliveryDispatch {
+ id String @id @default(cuid())
+ title String
+ radiopharmacyOrderId String
+ courier String
+ dispatchedAt DateTime
+ etaAt DateTime
+ containerNumber String
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedRadiopharmacyOrderId RadiopharmacyOrder @relation("DeliveryDispatch_radiopharmacyOrderId", fields: [radiopharmacyOrderId], references: [id], onDelete: Restrict)
+ linkedProductionDayId ProductionDay @relation("DeliveryDispatch_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+}
+
+model DeliveryReceipt {
+ id String @id @default(cuid())
+ title String
+ radiopharmacyOrderId String
+ receivedAt DateTime
+ receiver String
+ conditionNotes String
+ receipt String
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedRadiopharmacyOrderId RadiopharmacyOrder @relation("DeliveryReceipt_radiopharmacyOrderId", fields: [radiopharmacyOrderId], references: [id], onDelete: Restrict)
+ linkedProductionDayId ProductionDay @relation("DeliveryReceipt_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+}
+
+model ProductionException {
+ id String @id @default(cuid())
+ title String
+ productionLotId String
+ occurredAt DateTime
+ issue String
+ action String
+ owner String
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedProductionLotId ProductionLot @relation("ProductionException_productionLotId", fields: [productionLotId], references: [id], onDelete: Restrict)
+ linkedProductionDayId ProductionDay @relation("ProductionException_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+}
+
+model OperationalTask {
+ id String @id @default(cuid())
+ title String
+ owner String
+ priority String
+ startAt DateTime
+ dueAt DateTime
+ done Boolean
+ notes String?
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedProductionDayId ProductionDay @relation("OperationalTask_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+}
+
+model RuleVersion {
+ id String @id @default(cuid())
+ title String
+ jurisdiction String
+ version String
+ effectiveAt DateTime
+ expiresAt DateTime?
+ sourceUrl String
+ requirementText String
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedProductionDayId ProductionDay @relation("RuleVersion_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+}
+
+model DocumentRequirement {
+ id String @id @default(cuid())
+ title String
+ category String
+ requiredBy DateTime
+ sourceReference String
+ evidenceReference String?
+ reviewNotes String?
+ status String @default("Draft")
+ productionDayId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([productionDayId])
+ linkedProductionDayId ProductionDay @relation("DocumentRequirement_productionDayId", fields: [productionDayId], references: [id], onDelete: Restrict)
+}

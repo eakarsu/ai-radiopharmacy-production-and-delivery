@@ -1,0 +1,619 @@
+{
+  "ProductionDay": {
+    "name": "ProductionDay",
+    "fields": [
+      {
+        "name": "name",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "facility",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "licenseNumber",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "pharmacist",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDate",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "cutoffAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      }
+    ]
+  },
+  "RadiopharmacyOrder": {
+    "name": "RadiopharmacyOrder",
+    "fields": [
+      {
+        "name": "name",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "orderNumber",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "customer",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "product",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "requestedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "deliveryBy",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "quantity",
+        "kind": "number",
+        "required": true,
+        "integer": true,
+        "min": 0
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "ProductionLot": {
+    "name": "ProductionLot",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "lotNumber",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "product",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "producedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "expiresAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "batchReference",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "OrderLotAssignment": {
+    "name": "OrderLotAssignment",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "radiopharmacyOrderId",
+        "kind": "string",
+        "required": true,
+        "relation": "RadiopharmacyOrder"
+      },
+      {
+        "name": "productionLotId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionLot"
+      },
+      {
+        "name": "units",
+        "kind": "number",
+        "required": true,
+        "integer": true,
+        "min": 0
+      },
+      {
+        "name": "assignedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "AssayRecord": {
+    "name": "AssayRecord",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionLotId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionLot"
+      },
+      {
+        "name": "assayedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "activityBq",
+        "kind": "number",
+        "required": true,
+        "min": 0
+      },
+      {
+        "name": "instrument",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "technician",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "evidence",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "BatchCheck": {
+    "name": "BatchCheck",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionLotId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionLot"
+      },
+      {
+        "name": "checkName",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "resultText",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "checkedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "reviewer",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "DeliveryDispatch": {
+    "name": "DeliveryDispatch",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "radiopharmacyOrderId",
+        "kind": "string",
+        "required": true,
+        "relation": "RadiopharmacyOrder"
+      },
+      {
+        "name": "courier",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dispatchedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "etaAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "containerNumber",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "DeliveryReceipt": {
+    "name": "DeliveryReceipt",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "radiopharmacyOrderId",
+        "kind": "string",
+        "required": true,
+        "relation": "RadiopharmacyOrder"
+      },
+      {
+        "name": "receivedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "receiver",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "conditionNotes",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "receipt",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "ProductionException": {
+    "name": "ProductionException",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionLotId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionLot"
+      },
+      {
+        "name": "occurredAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "issue",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "action",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "owner",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "OperationalTask": {
+    "name": "OperationalTask",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "owner",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "priority",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "startAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "dueAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "done",
+        "kind": "boolean",
+        "required": true
+      },
+      {
+        "name": "notes",
+        "kind": "string",
+        "required": false
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "RuleVersion": {
+    "name": "RuleVersion",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "jurisdiction",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "version",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "effectiveAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "expiresAt",
+        "kind": "date",
+        "required": false
+      },
+      {
+        "name": "sourceUrl",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "requirementText",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  },
+  "DocumentRequirement": {
+    "name": "DocumentRequirement",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "category",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "requiredBy",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "sourceReference",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "evidenceReference",
+        "kind": "string",
+        "required": false
+      },
+      {
+        "name": "reviewNotes",
+        "kind": "string",
+        "required": false
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "productionDayId",
+        "kind": "string",
+        "required": true,
+        "relation": "ProductionDay"
+      }
+    ],
+    "parent": {
+      "entity": "ProductionDay",
+      "field": "productionDayId"
+    }
+  }
+}
